@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 - 2026-11-03
+- Brand applied: hearth theme tokens, Sora and Source Sans 3 (bundled), lockup, icons and favicon (C2PA metadata stripped from the SVGs).
+- Installable PWA: manifest, service worker, offline shell, iPhone home-screen icon.
+- Brand guide saved in docs/BRAND.md.
+
 ## 0.1.2 - 2026-11-03
 - Name written as lowercase "lantern" everywhere.
 

@@ -1,0 +1,53 @@
+/*
+  lantern design tokens
+  Theme: hearth (the first and only theme designed so far).
+  dusk and daylight are planned; they should define the same token names, so components never use hex values directly.
+  Load this file once, globally, before component styles.
+*/
+
+:root,
+:root[data-theme="hearth"] {
+  color-scheme: dark;
+
+  /* surfaces and text */
+  --bg: #1c0f0c;            /* app background */
+  --panel: #27150f;         /* boards, panels, columns */
+  --line: #432719;          /* borders, dividers, progress tracks */
+  --text: #f6d9b0;          /* primary text (cream) */
+  --muted: #b8977a;         /* secondary text */
+
+  /* accents */
+  --accent: #f08a3c;        /* orange glow: primary highlight, work in progress */
+  --forest: #0e4a36;        /* RARE accent. Filled shapes only, always with --on-forest text */
+  --on-forest: #f6d9b0;     /* text on forest fills */
+  --forest-tint: #22a073;   /* forest family for text, outlines, small icons and completed progress on dark */
+
+  /* the mark reads these when it is inlined as SVG */
+  --lantern-body: var(--accent);
+  --lantern-caps: var(--text);
+}
+
+:root {
+  /* typefaces: Sora for the name and headings, Source Sans 3 for everything read or counted */
+  --font-display: "Sora", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* type roles: weight size/line-height family */
+  --type-wordmark: 600 40px/1 var(--font-display);     /* letter-spacing: -0.02em */
+  --type-title:    600 28px/1.2 var(--font-display);   /* letter-spacing: -0.02em */
+  --type-heading:  600 20px/1.25 var(--font-display);  /* letter-spacing: -0.01em */
+  --type-label:    500 11px/1 var(--font-display);     /* uppercase, letter-spacing: 0.1em */
+  --type-card:     600 17px/1.35 var(--font-body);
+  --type-body:     400 15px/1.55 var(--font-body);
+  --type-meta:     400 13px/1.4 var(--font-body);      /* font-variant-numeric: tabular-nums */
+  --type-stat:     600 32px/1 var(--font-body);        /* font-variant-numeric: tabular-nums */
+
+  /* shape, carried over from the design studies */
+  --radius-card: 14px;
+  --radius-inner: 12px;
+  --radius-control: 10px;
+  --radius-pill: 999px;
+}
+
+/* digits that line up in columns: dates, counts, percentages, stats */
+.tabular { font-variant-numeric: tabular-nums; }

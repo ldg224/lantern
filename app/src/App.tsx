@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Session } from '@supabase/supabase-js';
+import { Lockup } from './Lockup';
 import { sb, type Board, type List, type Card } from './supabase';
 
 function Login() {
@@ -13,7 +14,7 @@ function Login() {
   }
   return (
     <form className="login" onSubmit={submit}>
-      <h1>lantern</h1>
+      <Lockup size={40} />
       <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
       <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
       <button>Sign in</button>
@@ -81,7 +82,7 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <strong>lantern</strong>
+        <Lockup size={19} />
         {boards.map(b => <button key={b.id} className={b.id === current?.id ? 'tab on' : 'tab'} onClick={() => setCurrent(b)}>{b.title}</button>)}
         <button className="ghost" onClick={addBoard}>+ Board</button>
         <button className="ghost right" onClick={() => sb.auth.signOut()}>Sign out</button>
