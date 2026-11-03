@@ -16,8 +16,8 @@ export default defineConfig({
         start_url: '/lantern/',
         scope: '/lantern/',
         display: 'standalone',
-        background_color: '#1c0f0c',
-        theme_color: '#1c0f0c',
+        background_color: '#fbf6ee',
+        theme_color: '#fbf6ee',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

@@ -1,27 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { Lockup } from './Lockup';
+import { Login } from './Login';
+import { getTheme, setTheme } from './theme';
 import { sb, type Board, type List, type Card } from './supabase';
-
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [msg, setMsg] = useState('');
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) setMsg(error.message);
-  }
-  return (
-    <form className="login" onSubmit={submit}>
-      <Lockup size={40} />
-      <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-      <button>Sign in</button>
-      {msg && <p className="err">{msg}</p>}
-    </form>
-  );
-}
 
 function BoardView({ board }: { board: Board }) {
   const [lists, setLists] = useState<List[]>([]);
@@ -50,10 +32,10 @@ function BoardView({ board }: { board: Board }) {
         <section key={l.id} className="list">
           <h3>{l.title}</h3>
           {cards.filter(c => c.list_id === l.id).map(c => <div key={c.id} className="card">{c.title}</div>)}
-          <button className="ghost" onClick={() => addCard(l)}>+ Add card</button>
+          <button className="ghost" onClick={() => addCard(l)}>+ add card</button>
         </section>
       ))}
-      <button className="ghost" onClick={addList}>+ Add list</button>
+      <button className="ghost" onClick={addList}>+ add list</button>
     </div>
   );
 }
@@ -62,6 +44,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [boards, setBoards] = useState<Board[]>([]);
+  const [theme, setThemeState] = useState(getTheme());
   const [current, setCurrent] = useState<Board | null>(null);
   useEffect(() => {
     sb.auth.getSession().then(({ data }) => { setSession(data.session); setReady(true); });
@@ -84,10 +67,11 @@ export default function App() {
       <header>
         <Lockup size={19} />
         {boards.map(b => <button key={b.id} className={b.id === current?.id ? 'tab on' : 'tab'} onClick={() => setCurrent(b)}>{b.title}</button>)}
-        <button className="ghost" onClick={addBoard}>+ Board</button>
-        <button className="ghost right" onClick={() => sb.auth.signOut()}>Sign out</button>
+        <button className="ghost" onClick={addBoard}>+ board</button>
+        <button className="ghost right" onClick={() => { const t = theme === 'hearth' ? 'daylight' : 'hearth'; setTheme(t); setThemeState(t); }}>{theme === 'hearth' ? 'daylight' : 'hearth'}</button>
+        <button className="ghost" onClick={() => sb.auth.signOut()}>sign out</button>
       </header>
-      {current ? <BoardView board={current} /> : <p className="empty">Create your first board.</p>}
+      {current ? <BoardView board={current} /> : <p className="empty">create your first board.</p>}
     </div>
   );
 }

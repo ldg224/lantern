@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2026-11-03
+- New default theme "daylight" (warm white). hearth (dark) stays as a switch in the header; choice is remembered.
+- Redesigned sign-in: glowing lantern panel, tagline, show/hide password, loading and error states, mobile layout.
+- Lowercase UI text throughout.
+
 ## 0.2.0 - 2026-11-03
 - Brand applied: hearth theme tokens, Sora and Source Sans 3 (bundled), lockup, icons and favicon (C2PA metadata stripped from the SVGs).
 - Installable PWA: manifest, service worker, offline shell, iPhone home-screen icon.

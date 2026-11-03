@@ -8,6 +8,9 @@ import '@fontsource/source-sans-3/600.css'
 import './tokens.css'
 import './index.css'
 import App from './App.tsx'
+import { getTheme, setTheme } from './theme'
+
+setTheme(getTheme())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

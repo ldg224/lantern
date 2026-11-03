@@ -5,7 +5,6 @@
   Load this file once, globally, before component styles.
 */
 
-:root,
 :root[data-theme="hearth"] {
   color-scheme: dark;
 
@@ -51,3 +50,22 @@
 
 /* digits that line up in columns: dates, counts, percentages, stats */
 .tabular { font-variant-numeric: tabular-nums; }
+
+/* daylight: the warm light theme, and the default. Same token names as hearth. */
+:root,
+:root[data-theme="daylight"] {
+  color-scheme: light;
+  --bg: #fbf6ee;
+  --panel: #ffffff;
+  --line: #e6d8c3;
+  --text: #2b1810;
+  --muted: #7a6350;
+  --accent: #b8530d;        /* text/outline orange, 4.6:1 on --bg */
+  --glow: #f4a259;          /* decorative glow only, never text */
+  --forest: #0e4a36;
+  --on-forest: #fbf6ee;
+  --forest-tint: #0e7a56;
+  --lantern-body: #e8742a;
+  --lantern-caps: #3a2016;
+}
+:root[data-theme="hearth"] { --glow: #f08a3c; }
