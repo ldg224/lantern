@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.2 - 2026-11-03
+- Name written as lowercase "lantern" everywhere.
+
 ## 0.1.1 - 2026-11-03
 - Repo made public; GitHub Pages deploy workflow and /lantern/ base path added.
 
