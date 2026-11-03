@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 - 2026-11-03
+- School: add subjects (each with a colour) from the sidebar. Each subject page sorts itself: overdue, this week, later, no date, waiting for results, done.
+- Item types: task, homework, SAC, exam, assignment. Assessments move on their own: upcoming, then waiting for result once the date passes, then marked when you add a result.
+- Results: enter a mark out of a total; the subject page shows your average.
+- Task details panel (side sheet on desktop, bottom sheet on phone): edit title, type, subject, date and time, steps or prep checklist with progress, notes, delete.
+- New date picker with quick picks (today, tomorrow, next monday, no date) and a month calendar.
+- Quick capture now detects subject and type: "methods ex 4C thu", "sac 2 methods fri".
+- Database migration 0003 (subjects, item kind, results). End-to-end test covers subjects, marks and phone layout.
+
 ## 0.4.0 - 2026-11-03
 - Today home page: overdue, focus, due today and unsorted tasks from every board, with a progress bar for the day.
 - Quick capture: "gym tomorrow 7am #health !" sets the due date and time, the board and focus. Keeps up with fast typing.

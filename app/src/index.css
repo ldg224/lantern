@@ -109,7 +109,7 @@ code{font:500 .92em/1 ui-monospace,Consolas,monospace;background:color-mix(in sr
   .page-head{flex-direction:column;align-items:stretch;gap:14px}
   .page-head h1{font-size:30px}
   .day-progress{text-align:left;min-width:0}
-  .tabbar{display:grid;grid-template-columns:1fr 1fr;position:fixed;left:0;right:0;bottom:0;padding:6px 16px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);z-index:10}
+  .tabbar{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;padding:6px 16px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);z-index:10}
   .tabbar a{display:grid;justify-items:center;gap:2px;padding:6px;text-decoration:none;color:var(--muted);font:500 12px/1 var(--font-body);border-radius:12px}
   .tabbar a.on{color:var(--forest-tint)}
   .task{padding:12px 6px 12px 12px}

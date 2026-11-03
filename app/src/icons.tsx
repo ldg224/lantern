@@ -32,3 +32,12 @@ export const ChevronIcon = ({ size = 16 }: P) => (
 export const ReturnIcon = ({ size = 16 }: P) => (
   <svg {...base(size)}><path d="M19 5v7a3 3 0 0 1-3 3H6" /><path d="M10 11l-4 4 4 4" /></svg>
 );
+export const CloseIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}><path d="M6 6l12 12M18 6L6 18" /></svg>
+);
+export const FlagIcon = ({ size = 14 }: P) => (
+  <svg {...base(size)}><path d="M5 21V4" /><path d="M5 4h11l-2 4 2 4H5" /></svg>
+);
+export const SchoolIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}><path d="M2.5 9L12 4.5 21.5 9 12 13.5z" /><path d="M6.5 11v5c1.6 1.6 3.5 2.4 5.5 2.4s3.9-.8 5.5-2.4v-5" /><path d="M21.5 9v5" /></svg>
+);

@@ -45,3 +45,12 @@ export function isDueToday(t: Task, now = new Date()): boolean {
 export function longDate(now = new Date()): string {
   return now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).toLowerCase();
 }
+
+/** Whole days from today to the due date (0 = today, negative = past). */
+export function daysUntil(iso: string, now = new Date()): number {
+  return Math.round((startOfDay(new Date(iso)).getTime() - startOfDay(now).getTime()) / DAY);
+}
+
+export function startOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}

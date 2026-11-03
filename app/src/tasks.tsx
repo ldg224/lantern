@@ -1,7 +1,7 @@
-import { useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
-import { sb, type Task } from './supabase';
-import { CheckIcon, ChevronIcon, PlusIcon, StarIcon } from './icons';
-import { dueLabel, isOverdue } from './dates';
+import { useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { sb, KIND_LABEL, isAssessment, isMarked, type Item, type Subject, type Task } from './supabase';
+import { CheckIcon, ChevronIcon, FlagIcon, PlusIcon, StarIcon } from './icons';
+import { daysUntil, dueLabel, isOverdue } from './dates';
 
 const FADE_MS = 650;
 
@@ -12,21 +12,29 @@ export function mergeLoaded<T extends Task>(loaded: T[], local: T[]): T[] {
 }
 
 /** Saving task changes with an instant local update, rolled back if the save fails. */
-export function useTaskOps<T extends Task>(setRows: Dispatch<SetStateAction<T[]>>, onError: (m: string) => void) {
+export function useTaskOps<T extends Item>(setRows: Dispatch<SetStateAction<T[]>>, onError: (m: string) => void) {
   const [fading, setFading] = useState<Set<string>>(new Set());
+  const [openId, setOpenId] = useState<string | null>(null);
+  const queue = useRef(new Map<string, Promise<void>>());
 
-  async function update(id: string, patch: Partial<Task>) {
+  function update(id: string, patch: Partial<Task>) {
     let before: T | undefined;
     setRows(rs => rs.map(r => {
       if (r.id !== id) return r;
       before = r;
       return { ...r, ...patch };
     }));
-    const { error } = await sb.from('cards').update(patch).eq('id', id);
-    if (error) {
-      setRows(rs => rs.map(r => (r.id === id && before ? before : r)));
-      onError('that change did not save. check your connection and try again.');
-    }
+    // saves for one item run in order, so a quick second change can never be overwritten by the first
+    const prev = queue.current.get(id) ?? Promise.resolve();
+    const next = prev.then(async () => {
+      const { error } = await sb.from('cards').update(patch).eq('id', id);
+      if (error) {
+        setRows(rs => rs.map(r => (r.id === id && before ? before : r)));
+        onError('that change did not save. check your connection and try again.');
+      }
+    });
+    queue.current.set(id, next);
+    return next;
   }
 
   function toggle(t: Task) {
@@ -43,38 +51,75 @@ export function useTaskOps<T extends Task>(setRows: Dispatch<SetStateAction<T[]>
 
   const star = (t: Task) => update(t.id, { priority: t.priority ? 0 : 1 });
 
-  return { fading, update, toggle, star };
+  async function remove(id: string) {
+    setOpenId(null);
+    setRows(rs => rs.filter(r => r.id !== id));
+    const { error } = await sb.from('cards').update({ archived: true }).eq('id', id);
+    if (error) onError('that did not delete. refresh and try again.');
+  }
+
+  const setSteps = (id: string, ticks: { done: boolean }[]) =>
+    setRows(rs => rs.map(r => (r.id === id ? { ...r, checklist_items: ticks } : r)));
+
+  return { fading, update, toggle, star, remove, setSteps, openId, open: setOpenId };
 }
 
-export function TaskRow({ t, fading, where, onToggle, onStar, action }: {
-  t: Task;
+/** What the row says about an assessment: when, or that it is waiting for a mark, or the mark. */
+function assessmentNote(t: Item): { text: string; tone: string } | null {
+  if (!isAssessment(t)) return null;
+  if (isMarked(t)) {
+    const pct = t.result_total ? Math.round((Number(t.result_score) / Number(t.result_total)) * 100) : null;
+    return { text: t.result_total ? `${t.result_score}/${t.result_total} · ${pct}%` : `${t.result_score}`, tone: 'marked' };
+  }
+  if (t.due_at && daysUntil(t.due_at) < 0) return { text: 'waiting for result', tone: 'waiting' };
+  if (t.due_at) {
+    const n = daysUntil(t.due_at);
+    if (n >= 2 && n <= 21) return { text: `in ${n} days`, tone: 'soon' };
+  }
+  return null;
+}
+
+export function TaskRow({ t, fading, subject, where, onToggle, onStar, onOpen, action }: {
+  t: Item;
   fading: boolean;
+  subject?: Subject | null;
   where?: string | null;
   onToggle: () => void;
   onStar: () => void;
+  onOpen: () => void;
   action?: ReactNode;
 }) {
-  const done = !!t.done_at;
-  const over = !done && isOverdue(t);
+  const assess = isAssessment(t);
+  const done = assess ? isMarked(t) : !!t.done_at;
+  const over = !done && !assess && isOverdue(t);
+  const note = assessmentNote(t);
+  const steps = t.checklist_items ?? [];
+  const stepsDone = steps.filter(s => s.done).length;
+
   return (
-    <li className={'task' + (done ? ' is-done' : '') + (fading ? ' is-fading' : '')}>
-      <button
-        className="check"
-        role="checkbox"
-        aria-checked={done}
-        aria-label={done ? `mark "${t.title}" as not done` : `complete "${t.title}"`}
-        onClick={onToggle}
-      >
-        <CheckIcon />
-      </button>
-      <div className="task-main">
-        <span className="task-title">{t.title}</span>
-        {(t.due_at || where) && (
-          <span className="task-meta">
-            {t.due_at && <span className={'due tabular' + (over ? ' over' : '')}>{dueLabel(t.due_at, t.due_has_time)}</span>}
-            {where && <span className="where">{where}</span>}
-          </span>
+    <li className={'task' + (done ? ' is-done' : '') + (fading ? ' is-fading' : '') + (assess ? ' is-assess' : '')} style={subject ? { ['--subj' as string]: subject.colour } : undefined}>
+      {assess
+        ? <span className="kind-badge" title={KIND_LABEL[t.kind]} aria-hidden="true"><FlagIcon /></span>
+        : (
+          <button className="check" role="checkbox" aria-checked={done} aria-label={done ? `mark "${t.title}" as not done` : `complete "${t.title}"`} onClick={onToggle}>
+            <CheckIcon />
+          </button>
         )}
+      <div className="task-main" role="button" tabIndex={0} onClick={onOpen} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }} aria-label={`open ${t.title}`}>
+        <span className="task-title">{t.title}</span>
+        <span className="task-meta">
+          {assess && <span className="kind-pill">{KIND_LABEL[t.kind]}</span>}
+          {t.due_at && !(assess && isMarked(t)) && <span className={'due tabular' + (over ? ' over' : '')}>{dueLabel(t.due_at, t.due_has_time)}</span>}
+          {note && <span className={'note tabular ' + note.tone}>{note.text}</span>}
+          {steps.length > 0 && (
+            <span className="steps-mini tabular" title={`${stepsDone} of ${steps.length} steps done`}>
+              <i className={stepsDone === steps.length ? 'complete' : ''}><b style={{ width: `${(stepsDone / steps.length) * 100}%` }} /></i>
+              {stepsDone}/{steps.length}
+            </span>
+          )}
+          {subject && <span className="subj"><i className="dot" />{subject.name}</span>}
+          {!subject && where && <span className="where">{where}</span>}
+        </span>
       </div>
       {action}
       <button
@@ -90,14 +135,14 @@ export function TaskRow({ t, fading, where, onToggle, onStar, action }: {
   );
 }
 
-export function DoneGroup({ count, children }: { count: number; children: ReactNode }) {
+export function DoneGroup({ count, children, label = 'done' }: { count: number; children: ReactNode; label?: string }) {
   const [open, setOpen] = useState(false);
   if (!count) return null;
   return (
     <div className="done-group">
       <button className={'done-toggle' + (open ? ' open' : '')} aria-expanded={open} onClick={() => setOpen(o => !o)}>
         <ChevronIcon size={14} />
-        done <span className="tabular">{count}</span>
+        {label} <span className="tabular">{count}</span>
       </button>
       {open && <ul className="tasks">{children}</ul>}
     </div>
@@ -105,7 +150,7 @@ export function DoneGroup({ count, children }: { count: number; children: ReactN
 }
 
 /** A "+ add" button that turns into a typed box: Enter adds and stays open, Escape closes. */
-export function InlineAdd({ label, onAdd, className = '' }: { label: string; onAdd: (v: string) => Promise<unknown> | unknown; className?: string }) {
+export function InlineAdd({ label, onAdd, className = '', placeholder }: { label: string; onAdd: (v: string) => Promise<unknown> | unknown; className?: string; placeholder?: string }) {
   const [open, setOpen] = useState(false);
   const [v, setV] = useState('');
   if (!open) {
@@ -129,7 +174,7 @@ export function InlineAdd({ label, onAdd, className = '' }: { label: string; onA
       <input
         autoFocus
         value={v}
-        placeholder={label}
+        placeholder={placeholder ?? label}
         aria-label={label}
         onChange={e => setV(e.target.value)}
         onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setV(''); } }}
