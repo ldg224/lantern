@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 - 2026-11-03
+- Today home page: overdue, focus, due today and unsorted tasks from every board, with a progress bar for the day.
+- Quick capture: "gym tomorrow 7am #health !" sets the due date and time, the board and focus. Keeps up with fast typing.
+- Tick to complete: the task fades into a collapsed done group. Overdue tasks get "move to today".
+- Star any task into focus.
+- New layout: sidebar on desktop, tab bar on phone. Boards show lists as rows of tasks, added inline (no pop-ups).
+- Database migration 0002 (done, due time, priority, unsorted tasks). End-to-end test in tests/e2e.
+
 ## 0.3.1 - 2026-11-03
 - daylight is the only theme: removed the theme switch.
 - Sign-in tagline replaced by a time-aware greeting and today's date.
