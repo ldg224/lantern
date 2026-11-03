@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 - 2026-11-03
+- daylight is the only theme: removed the theme switch.
+- Sign-in tagline replaced by a time-aware greeting and today's date.
+
 ## 0.3.0 - 2026-11-03
 - New default theme "daylight" (warm white). hearth (dark) stays as a switch in the header; choice is remembered.
 - Redesigned sign-in: glowing lantern panel, tagline, show/hide password, loading and error states, mobile layout.

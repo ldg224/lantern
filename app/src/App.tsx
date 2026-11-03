@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { Lockup } from './Lockup';
 import { Login } from './Login';
-import { getTheme, setTheme } from './theme';
 import { sb, type Board, type List, type Card } from './supabase';
 
 function BoardView({ board }: { board: Board }) {
@@ -44,7 +43,6 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [boards, setBoards] = useState<Board[]>([]);
-  const [theme, setThemeState] = useState(getTheme());
   const [current, setCurrent] = useState<Board | null>(null);
   useEffect(() => {
     sb.auth.getSession().then(({ data }) => { setSession(data.session); setReady(true); });
@@ -68,8 +66,7 @@ export default function App() {
         <Lockup size={19} />
         {boards.map(b => <button key={b.id} className={b.id === current?.id ? 'tab on' : 'tab'} onClick={() => setCurrent(b)}>{b.title}</button>)}
         <button className="ghost" onClick={addBoard}>+ board</button>
-        <button className="ghost right" onClick={() => { const t = theme === 'hearth' ? 'daylight' : 'hearth'; setTheme(t); setThemeState(t); }}>{theme === 'hearth' ? 'daylight' : 'hearth'}</button>
-        <button className="ghost" onClick={() => sb.auth.signOut()}>sign out</button>
+        <button className="ghost right" onClick={() => sb.auth.signOut()}>sign out</button>
       </header>
       {current ? <BoardView board={current} /> : <p className="empty">create your first board.</p>}
     </div>

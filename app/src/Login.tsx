@@ -2,6 +2,14 @@ import { useState, type FormEvent } from 'react';
 import { Lockup } from './Lockup';
 import { sb } from './supabase';
 
+function greeting() {
+  const h = new Date().getHours();
+  return h < 5 ? 'still up' : h < 12 ? 'good morning' : h < 18 ? 'good afternoon' : 'good evening';
+}
+function today() {
+  return new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).toLowerCase();
+}
+
 export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,11 +40,8 @@ export function Login() {
             <rect fill="var(--lantern-caps)" x="34" y="68" width="32" height="12" rx="6" />
           </g>
         </svg>
-        <p className="art-line">
-          a warm light
-          <br />
-          for your week.
-        </p>
+        <p className="art-line">{greeting()}.</p>
+        <p className="art-date">{today()}</p>
       </aside>
       <section className="auth-form">
         <form onSubmit={submit}>
